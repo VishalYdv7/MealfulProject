@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bar Graph Demo</title>
+  <!-- <script src="logic.js"></script> -->
+</head>
+<body>
+  <div>
+    <canvas id="chart"></canvas>
+    <canvas id="timeChart"></canvas>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+
+    var graphData = '<%- JSON.stringify(myArray) %>';
+    var graphTime = '<%- JSON.stringify(timeArray) %>';
+    // console.log(graphData);
+    const myArray = JSON.parse(graphData);
+    let dataElements = [];
+    let valueElements = [];
+    
+    for (let i = 0; i < myArray.length; i++) {
+      dataElements.push(myArray[i][0].toString());
+    }
+    for (let i = 0; i < myArray.length; i++) {
+      valueElements.push(myArray[i][1]);
+    }
+
+    const ctx = document.getElementById('chart').getContext('2d');
+    const data = {
+      labels: dataElements,
+      datasets: [{
+        label: 'Number of Schedules',
+        data: valueElements,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      }]
+    };
+
+    
+    const options = {
+      layout: {
+        padding: {
+          left: 50,
+          right: 50,
+          top: 50,
+          bottom: 50
+        }
+      },
+      onClick: handleClick
+    };
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: data,
+      options: options
+    });
+    function handleClick(evt, elements) {
+      if (elements.length > 0) {
+        const index = elements[0]._index;
+        const date = data.labels[index];
+        // call your Node.js code to get the time chart image URL
+        // replace the URL with your own server endpoint that returns the time chart image URL
+        fetch(`/time-chart?date=${date}`).then(response => {
+          return response.text();
+        }).then(url => {
+          const timeChart = document.createElement('img');
+          timeChart.src = url;
+          document.body.appendChild(timeChart);
+        });
+      }
+    }
+
+    const myTime = JSON.parse(graphTime);
+    let dataTimeElements = [];
+    let valueTimeElements = [];
+    
+    for (let i = 0; i < myTime.length; i++) {
+      dataTimeElements.push(myTime[i][0].toString());
+    }
+    for (let i = 0; i < myTime.length; i++) {
+      valueTimeElements.push(myTime[i][1]);
+    }
+
+    const ctx1 = document.getElementById('timeChart').getContext('2d');
+    const timeData = {
+      labels: dataTimeElements,
+      datasets: [{
+        label: 'Number of Schedules with Timeslots',
+        data: valueTimeElements,
+        backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)'
+      ],
+      borderColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+      ],
+        borderWidth: 1
+      }]
+    };
+    const options1 = {
+      layout: {
+        padding: {
+          left: 50,
+          right: 50,
+          top: 50,
+          bottom: 50
+        }
+      },
+      onClick: handleClick
+    };
+    const timeChart = new Chart(ctx1, {
+      type: 'bar',
+      data: timeData,
+      options: options1
+    });
+    function handleClick(evt, elements) {
+      if (elements.length > 0) {
+        const index = elements[0]._index;
+        const date = data.labels[index];
+        // call your Node.js code to get the time chart image URL
+        // replace the URL with your own server endpoint that returns the time chart image URL
+        fetch(`/time-chart?date=${date}`).then(response => {
+          return response.text();
+        }).then(url => {
+          const timeChart = document.createElement('img');
+          timeChart.src = url;
+          document.body.appendChild(timeChart);
+        });
+      }
+    }
+
+  </script>
+</body>
+</html>
